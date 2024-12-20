@@ -1,16 +1,16 @@
 "use client"
 
 import { api } from "@/convex/_generated/api";
-import { SignInButton, SignOutButton, useSession} from "@clerk/nextjs";
-import { useMutation } from "convex/react";
+import { useSession} from "@clerk/nextjs";
+import { useMutation, useQuery } from "convex/react";
 
 export default function Home(){
   const { isSignedIn } = useSession();
   const createThumbnail = useMutation(api.thumbnails.createThumbnail);
+  const thumbnails = useQuery(api.thumbnails.getThumbnailsForUser);
 
   return (
     <main>
-      {isSignedIn ? <SignOutButton/> :  <SignInButton/>}
 
       {isSignedIn && 
         <form onSubmit={ async (e) =>{
@@ -27,6 +27,14 @@ export default function Home(){
           <input name="title" className="text-black"></input>
           <button>Create</button>
         </form>
+      }
+      {thumbnails?.map((thumbnail) => {
+          return (
+            <div key={thumbnail._id}>
+              <h2>{thumbnail.title}</h2>
+            </div>
+          )
+        })
       }
     </main>
   )
